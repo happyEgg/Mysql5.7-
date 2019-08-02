@@ -1,6 +1,7 @@
 Mysql5.7基于日志主从复制
 
 1、先下载 mysql源安装包
+
         yum -y install wget
         wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm   
         yum -y localinstall mysql57-community-release-el7-11.noarch.rpm              ##安装mysql源   
@@ -17,13 +18,14 @@ Mysql5.7基于日志主从复制
          mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY '12345678';
         
 2、在master服务器上新建用户，登录mysql后执行以下语句
+
 create user 'dba'@'192.168.25.%' identified by '123456'；   #新建用户,允许登录的ip地址段:192.168.25.% 用户名:dba 密码:123456
 grant replication slave on *.* to dba@'192.168.25.%';    #赋权限     
 
 3、配置/etc/my.conf 配置文件
+
         # For advice on how to change settings please see
         # http://dev.mysql.com/doc/refman/5.7/en/server-configuration-defaults.html
-
         [mysqld]
         #
         # Remove leading # and set to the amount of RAM for the most important data
@@ -91,14 +93,18 @@ grant replication slave on *.* to dba@'192.168.25.%';    #赋权限
 ##从库操作指令
 
 4、备份master 数据(在从库也可以加参数执行)
+
     mysqldump --single-transaction --master-data=2 --triggers --routines --all-databases -uroot -p > all.sql 
     
 5、Slaver数据库备份数据还原
+
        mysql -uroot -p < all.sql
        
 6、more all.sql 可以看到文件名和起始位置
+
 change master to master_host='192.168.1.1',master_port=4306, master_user='repl',master_password='123456789', master_log_file='mysql-bin.000038',master_log_pos=419500193;
 
 7、启动 slave
+
 start slave;
 show slave status \G;
